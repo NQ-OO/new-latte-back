@@ -7,7 +7,7 @@ from .models import *
 
 class SceneAdmin(admin.ModelAdmin):
     list_display=('Name','pub_date','id')
-    filter_horizontal = ('NextScenes',)
+    #filter_horizontal = ('NextScenes',)
     search_fields=['pub_date','id']
 
 admin.site.register(Scene,SceneAdmin)

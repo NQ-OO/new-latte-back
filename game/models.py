@@ -2,10 +2,18 @@ from django.db import models
 
 # Create your models here.
 
+class Character(models.Model):
+    Name=models.CharField(max_length=255,help_text="인물 이름")
+    def __str__(self):
+        return str(self.Name)
+
 class Scene(models.Model):
     id=models.IntegerField(default=0,primary_key=True,help_text="장면 고유 번호")
     Name=models.CharField(max_length=255,null=True,blank=True, help_text="장면 이름")
-    NextScenes=models.ManyToManyField('self',null=True,blank=True,symmetrical=False, help_text="다음 장면들")
+    NextScene_1=models.ForeignKey('self',null=True,blank=True,symmetrical=False, help_text="1번 다음 장면")
+    NextScene_2=models.ForeignKey('self',null=True,blank=True,symmetrical=False, help_text="2번 다음 장면")
+    NextScene_3=models.ForeignKey('self',null=True,blank=True,symmetrical=False, help_text="3번 다음 장면")
+    NextScene_4=models.ForeignKey('self',null=True,blank=True,symmetrical=False, help_text="4번 다음 장면")
     # 서로를 가리키게 되고, 반대 방향으로 참조할 수 있다.
     #History=models.OneToOneField('self',null=True,blank=True,on_delete=models.SET_NULL,help_text="이전 장면")
     pub_date=models.DateTimeField(auto_now_add=True)
