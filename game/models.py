@@ -1,6 +1,34 @@
 from django.db import models
 from django.utils import timezone
 # Create your models here.
+
+
+class Face_reader(models.Model):
+    Name=models.CharField(max_length=255,null=True,blank=True,help_text="파일명")
+    uploadedFile = models.FileField(upload_to = "Face")
+    pub_date=models.DateTimeField(default=timezone.now)
+    Response=models.JSONField(default=dict,null=True,blank=True,help_text='{"happy":12.5, "sad":20}')
+    def __str__(self):
+        return str(self.Name)
+
+class Speech_to_Text(models.Model):
+    Name=models.CharField(max_length=255,null=True,blank=True,help_text="파일명")
+    uploadedFile = models.FileField(upload_to = "Speech")
+    pub_date=models.DateTimeField(default=timezone.now)
+    Response=models.JSONField(default=dict,null=True,blank=True,help_text='{"text":"Hi I am"}')
+    def __str__(self):
+        return str(self.Name)
+    
+class Text_reader(models.Model):
+    Name=models.CharField(max_length=255,null=True,blank=True,help_text="이름")
+    Text=models.CharField(max_length=255,null=True,blank=True,help_text="텍스트")
+    pub_date=models.DateTimeField(default=timezone.now)
+    Response=models.JSONField(default=dict,null=True,blank=True,help_text='{"happy":12.5, "sad":25}')
+    
+    def __str__(self):
+        return str(self.Name)
+
+
 class Scene(models.Model):
     id=models.IntegerField(default=0,primary_key=True,help_text="장면 고유 번호")
     Name=models.CharField(max_length=255,null=True,blank=True, help_text="장면 이름")
@@ -20,7 +48,7 @@ class Character(models.Model):
     Comment=models.CharField(max_length=255,null=True,blank=True,help_text="인물 설명")
     HP=models.IntegerField(default=100,help_text="체력")
     MP=models.IntegerField(default=100,help_text="정신력")
-    Relation=models.JSONField(default=dict,help_text="예시 {'제퍼슨' : {'fear' : 50 , 'love' : 10}, '나나' : {'fear' : 20, 'love' : 50}}")
+    Relation=models.JSONField(default=dict,help_text='{"제퍼슨" : {"fear" : 50, "love" : 10}, "나나" : {"fear" : 20, "love" : 50}}')
     Picture=models.ImageField(upload_to="characters",null=True,blank=True, help_text="이미지 삽화")
     pub_date=models.DateTimeField(default=timezone.now)
     def __str__(self):
@@ -62,7 +90,7 @@ class Scene_picture(models.Model):
 class Scene_text(models.Model):
     Scene = models.ForeignKey(Scene, on_delete=models.CASCADE, help_text="장면")
     Title = models.CharField(max_length=255,default="제목", help_text="제목")
-    Narrative=models.CharField(max_length=4096,null=True,blank=True, help_text="내용")
+    Narrative=models.TextField(max_length=8192,null=True,blank=True, help_text="내용")
     pub_date=models.DateTimeField(default=timezone.now)
     def __str__(self):
         return str(self.Title)
@@ -73,9 +101,9 @@ class Question_Answer(models.Model):
     Question=models.CharField(max_length=1024, help_text="질문")
 
     Player_Answer=models.CharField(max_length=1024,null=True,blank=True, help_text="플레이어 응답")
-    Answer_Number=models.IntegerField(default=0,help_text="응답 선택지 번호",null=True,blank=True) # 이것은 딥러닝으로 돌아온다.
-    
-    Result_list=models.JSONField(default=dict,help_text="{'1':{'f':{'마음을 열었다'},'i':{'편지'},'r':{'제퍼슨':{'fear':-5,'love':20}}} }")
+    Answer_Number=models.IntegerField(default=0,null=True,blank=True,help_text="AI가 분석한 응답 데이터, optimism : 1, negative : 2, sadness : 3, joy : 4, love : 5, anger : 6, fear : 7, surprise : 8") # 이것은 딥러닝으로 돌아온다.
+
+    Result_list=models.JSONField(default=dict,help_text='{"1":{"f":["마음을 열었다"],"i":["편지"],"r":[{"제퍼슨":{"fear":-5,"love":20}}, {"나나":{"fear":5, "love":-10}} ] }, "2" : ~~ }')
 
     pub_date=models.DateTimeField(default=timezone.now)
     def __str__(self):
@@ -86,7 +114,7 @@ class Diverges(models.Model):
     Name=models.CharField(max_length=255,default="분기점",help_text="분기점 이름")
     Comment=models.CharField(max_length=255,null=True,blank=True,  help_text="코멘트")
 
-    Checking_list=models.JSONField(default=dict,help_text="{'1':{'i':{'권총'},'f':{'그것을 알아냈다'},'r':{'제퍼슨':'fear'}},'2':{'fi':{'권총','이것을 알아냈다'},'relation':{'제퍼슨','love'}} }") # 필요한 item, fact, Relation, 들의 목록을 각 분기점에 따라 부여.
+    Checking_list=models.JSONField(default=dict,help_text='1,2,3,4 분기를 순서대로 확인하여 가장 먼저 맞는 분기로 진행. 만약 1,2,3이 전부 해당하지 않으면 자동으로 4번 분기로 진행. 작성법 예시 : {"1":{"i":["권총","밧줄"],"f":["그것을 알아냈다","저것도 알아냈다"],"r":[{"제퍼슨":"fear"},{"나나":"love"}] },"2":{"i":["권총"],"f":["이것을 알아냈다"],"r":[{"제퍼슨":"love"}] },  }') # 필요한 item, fact, Relation, 들의 목록을 각 분기점에 따라 부여.
 
     Option=models.IntegerField(default=0,null=True,blank=True,help_text="결정된 분기점 번호")
     
