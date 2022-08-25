@@ -1,6 +1,22 @@
 from rest_framework import serializers
 from .models import *
 
+class Face_readerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Face_reader
+        fields='__all__'
+
+class Speech_to_TextSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Speech_to_Text
+        fields='__all__'
+
+class Text_readerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Text_reader
+        fields='__all__'
+
+
 class SceneSerializer(serializers.ModelSerializer):
     class Meta:
         model=Scene

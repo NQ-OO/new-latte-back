@@ -6,8 +6,9 @@ from .views import *
 
 router = routers.DefaultRouter()
 router.register('scenes',SceneViewSet)
-
-
+router.register('text',Text_readerViewSet)
+router.register('voice',Speech_to_TextViewSet)
+router.register('face',Face_readerViewSet)
 urlpatterns = [
     path('api/',include(router.urls)),
     path('', views.index, name='index'),
