@@ -1,10 +1,10 @@
 from transformers import AutoTokenizer, AutoModelWithLMHead
 from deepface import DeepFace
 tokenizer = AutoTokenizer.from_pretrained("mrm8488/t5-base-finetuned-emotion")
-
 model = AutoModelWithLMHead.from_pretrained("mrm8488/t5-base-finetuned-emotion")
 
-
+import cv2
+import os
 
 def get_emotion(text):
   input_ids = tokenizer.encode(text + '</s>', return_tensors='pt')
@@ -27,8 +27,9 @@ def face_expression(file_path):
         obj=DeepFace.analyze(img_path=file_path,actions=['emotion'])
     except:
         noface={'message' : 'no face exists here'}
-        return noface
-    return obj
+        return noface,True
+
+    return obj,False
 
 import os
 import sys
@@ -72,6 +73,60 @@ def translate(sentences):
 # '안나에게 결코 잊지 못할 하루를 선물했네요. 투데이 와글와글이었습니다.']
 #eng=translate(sentences)
 #print(get_emotion(eng[0]).split()[1])
+def movie_extractor(file_path):
+    filepath = file_path
+    video = cv2.VideoCapture(filepath) #'' 사이에 사용할 비디오 파일의 경로 및 이름을 넣어주도록 함
+
+    if not video.isOpened():
+        print("Could not Open :", filepath)
+        return {'error' : 'could not open'}
+
+    length = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+    width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    fps = round(video.get(cv2.CAP_PROP_FPS))
+
+    print("length :", length)
+    print("width :", width)
+    print("height :", height)
+    print("fps :", fps)
+
+    try:
+        if not os.path.exists(filepath[:-4]):
+            os.makedirs(filepath[:-4])
+    except OSError:
+        print ('Error: Creating directory. ' +  filepath[:-4])
+
+    time = 0
+    expressions=[]
+    times=[]
+    while(video.isOpened()):
+        ret, image = video.read()
+        #print(ret)
+        if not ret:
+            break
+        if(int(video.get(1)) % fps == 0): #앞서 불러온 fps 값을 사용하여 1초마다 추출
+            path=filepath[:-4] + "/frame" + str(time)+".jpg"
+            cv2.imwrite(path, image)
+            #print(str(int(video.get(1))))
+            #print(fps)
+            #print(int(video.get(1)) % fps)
+            #print('Saved frame number :', str(int(video.get(1))))
+            exp,noface=face_expression(path)
+            #print(exp)
+            if noface is False:
+                expressions.append(exp)
+                times.append(time)
+                #numbers.append(video.get(1) / fps)
+            time += 1
+
+    #frame_exp=dict(zip(numbers,expressions))
+
+    video.release()
+    return {'expressions' : expressions, 'timestamps' : times}
+
+#a=movie_extractor('/home/ubuntu/yourchoice/media/Face/sample.mp4')
+#print(a)
 
 
 naver_url="https://clovaspeech-gw.ncloud.com/external/v1/3598/b5defce23910b08b500375ac0ddca79a4fe93a9c72b49b980e5a853dc3ec8667"
@@ -86,10 +141,12 @@ def Speech2Text(name):
             #print(ar)
 
     text=[]
+    time=[]
     for i in ar["segments"]:
         text.append(i["text"])
+        time.append(round(i["start"]/1000))
     
-    return text
+    return text,time
 #import os
 #import numpy as np
 #import matplotlib.pyplot as plt

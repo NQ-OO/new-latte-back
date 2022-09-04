@@ -62,14 +62,14 @@ class Speech_to_TextViewSet(viewsets.ModelViewSet):
             except :
                 return HttpResponse('An error occurs.',status=423)
             pub_date=s.pub_date
-            kor_texts=Speech2Text(name)
+            kor_texts,times=Speech2Text(name)
             texts=translate(kor_texts)
             emotions=[]
 
             for text in texts:
                 emotions.append(get_emotion(str(text)).split()[1])
             
-            s.Response={'texts' : texts, 'emotions' : emotions}
+            s.Response={'texts' : texts, 'emotions' : emotions,'timestamp' : times}
             s.save()
             return JsonResponse(s.Response)
         else:
@@ -94,7 +94,8 @@ class Face_readerViewSet(viewsets.ModelViewSet):
             except :
                 return HttpResponse('An error occurs.',status=423)
             pub_date=s.pub_date
-            expression=face_expression("/home/ubuntu/yourchoice/media/Face/"+name+".jpg")
+            #expression=face_expression("/home/ubuntu/yourchoice/media/Face/"+name+".jpg")
+            expression=movie_extractor("/home/ubuntu/yourchoice/media/Face/"+name)
             s.Response=expression
             s.save()
             return JsonResponse(s.Response)
