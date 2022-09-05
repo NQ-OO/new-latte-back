@@ -1,5 +1,9 @@
 from transformers import AutoTokenizer, AutoModelWithLMHead
 from deepface import DeepFace
+import urllib.request
+from azure.cognitiveservices.vision.face import FaceClient
+from azure.cognitiveservices.vision.face.models import FaceAttributeType
+from msrest.authentication import CognitiveServicesCredentials
 tokenizer = AutoTokenizer.from_pretrained("mrm8488/t5-base-finetuned-emotion")
 model = AutoModelWithLMHead.from_pretrained("mrm8488/t5-base-finetuned-emotion")
 
@@ -19,6 +23,72 @@ def get_emotion(text):
 
 
 
+# This key will serve all examples in this document.
+KEY = '79c02bc0ff554cc89c0b237064b6570b'
+
+# This endpoint will be used in all examples in this quickstart.
+ENDPOINT = 'https://2022internfaceapp.cognitiveservices.azure.com/'
+
+# Create an authenticated FaceClient.
+face_client = FaceClient(ENDPOINT, CognitiveServicesCredentials(KEY))
+#face_attributes = ['emotion']
+face_attributes = ['age', 'gender', 'headPose', 'smile', 'facialHair', 'glasses', 'emotion']
+def azure_face_api(image):
+    im=open(image,'rb')
+    #detected_faces = face_client.face.detect_with_stream(im, return_face_attributes=face_attributes)
+    #detected_faces = face_client.face.detect_with_stream(im)
+    detected_faces=face_client.face.detect_with_url('https://media-cldnry.s-nbcnews.com/image/upload/t_fit-1240w,f_auto,q_auto:best/newscms/2021_07/2233721/171120-smile-stock-njs-333p.jpg', return_face_attributes=face_attributes)
+    if not detected_faces:
+        #raise Exception(
+        #    'No face detected from image {}'.format(os.path.basename(image)))
+        return {'message':'no face exists here'},True
+    for face in detected_faces:
+        print()
+        print('Detected face ID from', os.path.basename(image), ':')
+        # ID of detected face
+        print(face.face_id)
+        # Show all facial attributes from the results
+        print()
+        #print('Facial attributes detected:')
+        #print('Age: ', face.face_attributes.age)
+        #print('Gender: ', face.face_attributes.gender)
+        #print('Head pose: ', face.face_attributes.head_pose)
+        #print('Smile: ', face.face_attributes.smile)
+        #print('Facial hair: ', face.face_attributes.facial_hair)
+        #print('Glasses: ', face.face_attributes.glasses)
+        print('Emotion: ')
+        
+        print('\tAnger: ', face.face_attributes.emotion.anger)
+        obj={'anger':face.face_attributes.emotion.anger}
+        print('\tContempt: ', face.face_attributes.emotion.contempt)
+        obj['contempt']=face.face_attributes.emotion.contempt
+        print('\tDisgust: ', face.face_attributes.emotion.disgust)
+        obj['disgust']=face.face_attributes.emotion.disgust
+        print('\tFear: ', face.face_attributes.emotion.fear)
+        obj['fear']=face.face_attributes.emotion.fear
+        print('\tHappiness: ', face.face_attributes.emotion.happiness)
+        obj['happiness']=face.face_attributes.emotion.happiness
+        print('\tNeutral: ', face.face_attributes.emotion.neutral)
+        obj['neutral']=face.face_attributes.emotion.neutral
+        print('\tSadness: ', face.face_attributes.emotion.sadness)
+        obj['sadness']=face.face_attributes.emotion.sadness
+        print('\tSurprise: ', face.face_attributes.emotion.surprise)
+        obj['surprise']=face.face_attributes.emotion.surprise
+        print()
+        
+        emotions=['anger','contempt','disgust','fear','happiness','neutral','sadness','surprise']
+        dominant_emotion='neutral'
+        max=0
+        for e in emotions:
+            if obj[e]>max:
+                max=obj[e]
+                dominant_emotion=e
+
+        return dominant_emotion,False
+
+#print(azure_face_api("/home/ubuntu/yourchoice/media/Face/smile.jpg"))
+
+
 def face_expression(file_path):
     backends = ['opencv', 'ssd', 'dlib', 'mtcnn', 'retinaface', 'mediapipe']
     #face = DeepFace.detectFace(img_path = "img.jpg", target_size = (224, 224), detector_backend =backends[4])
@@ -33,7 +103,6 @@ def face_expression(file_path):
 
 import os
 import sys
-import urllib.request
 import json
 
 client_id = "3IcEzV3WWP77e0DICyin" # 개발자센터에서 발급받은 Client ID 값
