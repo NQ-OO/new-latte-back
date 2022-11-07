@@ -5,6 +5,7 @@ from .models import *
 from .deeplearning import *
 from rest_framework.parsers import JSONParser
 from django.http import HttpResponse, JsonResponse
+from rest_framework.response import Response
 import requests
 
 # Create your views here.
@@ -15,6 +16,55 @@ from django.http import HttpResponse
 def index(request):
     return HttpResponse("Hello, world. You're in index.")
 
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset=User.objects.all()
+    serializer_class=UserSerializer
+    def get_queryset(self):
+        qs=super().get_queryset()
+        #print(qs)
+        search=self.request.query_params.get('username','')
+        if search:
+            qs=qs.filter(username=search)
+            
+        return qs
+
+class MovieViewSet(viewsets.ModelViewSet):
+    queryset=Movie.objects.all()
+    serializer_class=MovieSerializer
+
+    def create(self, request):
+        serializer = MovieSerializer(data = request.data, many=True)
+        uploadedFile = request.FILES.get('uploadedFile')
+        if uploadedFile != None and serializer.is_valid() :
+            name=request.data["Name"]
+
+            try :
+                m=Movie.objects.create(uploadedFile=uploadedFile,Name=name)
+            except :
+                return HttpResponse('An error occurs.',status=423)
+            pub_date=m.pub_date
+            
+            return JsonResponse({'Name' : m.Name,'pub_date':pub_date},status=201)
+        else:
+            return HttpResponse(status=500)
+    def list(self,request):
+        queryset = Movie.objects.all()
+        serializer = MovieSerializer(queryset, many=True)
+         
+        return Response(serializer.data)
+
+    def get_queryset(self):
+        qs=super().get_queryset()
+        search=self.request.query_params.get('Name','')
+        if search:
+            qs=qs.filter(Name=search).first()
+        return qs
+    
+    #def retrieve(self, request, pk=None):
+    #    query = Movie.objects.filter(Name_exact=request.data["Name"])
+    #    obj = get_object_or_404(query, pk=pk)
+    #    serializer = MovieSerializer(obj)
+    #    return Response(serializer.data)
 
 class SceneViewSet(viewsets.ModelViewSet):
     queryset = Scene.objects.all()
@@ -87,17 +137,70 @@ class Face_readerViewSet(viewsets.ModelViewSet):
 
         if uploadedFile != None and serializer.is_valid() :
             name=request.data["Name"]
-            #print("uploaded name : " + str(name))
+            movie_name=request.data["Movie"]
+            
+            print("uploaded name : " + str(name))
+            print("movie name : " + str(movie_name))            
+            #print(uploadedFile)
             # 차후 동영상에 대해서 프레임을 끊어서 아래의 함수를 돌리는 방안을 검토하자.
             try :
-                s=Face_reader.objects.create(uploadedFile=uploadedFile,Name=name)
+                
+                m=Movie.objects.filter(uploadedFile__endswith=movie_name)[0]
+                print(m.is_eval)
+                
+                if hasattr(m,'face_reader'):
+                    f=m.face_reader
+                    print("face is : ")
+                    print(f)
+                    f.delete()
+                    #print(m.face_reader)
+                
+
+                #if m.is_eval==1:
+                    #print(hasattr(m,face_reader))
+                    #f=m.face_reader
+                    #print(f)
+                    #f.movie=null
+                    #f.delete()
+                #print(Movie.objects.get(Name__exact=movie_name))
+                #print(movie_name)
+                #print(Movie.objects.all())
+                #print(m)
+                s=Face_reader.objects.create(movie=m,uploadedFile=uploadedFile,Name=name)
+                #s=Face_reader.objects.create(uploadedFile=uploadedFile,Name=name)
+                #s.movie=m
             except :
                 return HttpResponse('An error occurs.',status=423)
             pub_date=s.pub_date
             #expression=face_expression("/home/ubuntu/yourchoice/media/Face/"+name+".jpg")
+            if name[-4:] != '.mp4':
+                if name[-4]=='.':
+                    return JsonResponse({'error' : 'format must be .mp4'})
+                else:
+                    name=str(name)+'.mp4'
+            
+            m.is_eval=1
+            m.save()
             expression=movie_extractor("/home/ubuntu/yourchoice/media/Face/"+name)
             s.Response=expression
             s.save()
             return JsonResponse(s.Response)
         else:
             return HttpResponse(status=500)
+    def list(self,request):
+        queryset = Face_reader.objects.all()
+        serializer =Face_readerSerializer(queryset, many=True)
+
+        return Response(serializer.data)
+    def get_queryset(self):
+        qs=super().get_queryset()
+        search=self.request.query_params.get('Name','')
+        if search:
+            qs=qs.filter(Name=search).first()
+        return qs
+
+    #def retrieve(self, request, pk=None):
+    #    query = Face_reader.objects.get(Name__exact=request.data["Name"])
+    #    obj = get_object_or_404(query.movie, pk=pk)
+    #    serializer = MovieSerializer(obj)
+    #    return Response(serializer.data)

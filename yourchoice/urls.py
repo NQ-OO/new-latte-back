@@ -21,4 +21,8 @@ from django.conf import settings
 urlpatterns = [
     path('',include('game.urls')),
     path('admin/', admin.site.urls),
+    path('dj-rest-auth/',include('dj_rest_auth.urls')),
+    path('dj-rest-auth/registration',include('dj_rest_auth.registration.urls')),
+    #path('rest-auth/',include('rest_auth.urls')),
+    #path('rest-auth/registration/',include('rest_auth.registration.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

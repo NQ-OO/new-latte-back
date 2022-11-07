@@ -1,12 +1,27 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import AbstractUser
 # Create your models here.
+
+
+class User(AbstractUser):
+    is_evaluater=models.IntegerField(default=0)
+
+
+class Movie(models.Model):
+    Name=models.CharField(max_length=255,null=True,blank=True,help_text="파일명")
+    uploadedFile = models.FileField(upload_to = "Movie")
+    pub_date=models.DateTimeField(default=timezone.now)
+    is_eval=models.IntegerField(default=0) 
+    def __str__(self):
+        return str(self.Name)
 
 
 class Face_reader(models.Model):
     Name=models.CharField(max_length=255,null=True,blank=True,help_text="파일명")
     uploadedFile = models.FileField(upload_to = "Face")
     pub_date=models.DateTimeField(default=timezone.now)
+    movie=models.OneToOneField(Movie,on_delete=models.SET_NULL,null=True,blank=True)
     Response=models.JSONField(default=dict,null=True,blank=True,help_text='{"happy":12.5, "sad":20}')
     def __str__(self):
         return str(self.Name)

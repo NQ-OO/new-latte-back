@@ -27,9 +27,25 @@ SECRET_KEY = 'django-insecure-_!k#364tq%p6&bc2+n1@x6de8&!=_)%dy5!0c^518dv$(7ikw7
 DEBUG = True
 
 ALLOWED_HOSTS = ['nmwh2022030101.namisnt.com','127.0.0.1']
-
+CSRF_TRUSTED_ORIGINS=['http://nmwh2022030101.namisnt.com']
 
 # Application definition
+
+AUTH_USER_MODEL='game.User'
+
+AUTHENTICATION_BACKENDS = (
+            ('django.contrib.auth.backends.ModelBackend'),
+            )
+REST_AUTH_REGISTER_SERIALIZERS = {
+    'REGISTER_SERIALIZER': 'game.serializers.CustomRegisterSerializer',
+}
+ACCOUNT_ADAPTER = 'game.adapters.CustomAccountAdapter'
+
+REST_FRAMEWORK={
+    'DEFAULT_AUTHENTICATION_CLASSES':(
+    'rest_framework.authentication.BasicAuthentication',
+        ),
+}
 
 INSTALLED_APPS = [
     'game.apps.GameConfig',
@@ -40,8 +56,17 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'django_cleanup.apps.CleanupConfig'
+    'django_cleanup.apps.CleanupConfig',
+    'rest_framework.authtoken',
+    'dj_rest_auth',
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'dj_rest_auth.registration',
+    
 ]
+SITE_ID=1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -102,6 +127,7 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
 
 
 # Internationalization

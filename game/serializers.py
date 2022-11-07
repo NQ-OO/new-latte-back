@@ -1,5 +1,28 @@
 from rest_framework import serializers
 from .models import *
+from dj_rest_auth.registration.serializers import RegisterSerializer
+
+
+
+class CustomRegisterSerializer(RegisterSerializer):
+    # 기본 설정 필드: username, password, email
+    # 추가 설정 필드: profile_image
+    is_evaluater= serializers.IntegerField(default=0)
+    def get_cleaned_data(self):
+        data = super().get_cleaned_data()
+        data['is_evaluater'] = self.validated_data.get('is_evaluater', '')
+
+        return data
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=User
+        fields='__all__'
+
+class MovieSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Movie
+        fields='__all__'
 
 class Face_readerSerializer(serializers.ModelSerializer):
     class Meta:
