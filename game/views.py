@@ -137,15 +137,17 @@ class Face_readerViewSet(viewsets.ModelViewSet):
 
         if uploadedFile != None and serializer.is_valid() :
             name=request.data["Name"]
-            movie_name=request.data["Movie"]
-            
+            #movie_name=request.data["Movie"]
+            movie_name=name # Face 의 이름을 movie의 이름과 같게 전송해야 한다!
+
             print("uploaded name : " + str(name))
-            print("movie name : " + str(movie_name))            
+            #print("movie name : " + str(movie_name))            
             #print(uploadedFile)
             # 차후 동영상에 대해서 프레임을 끊어서 아래의 함수를 돌리는 방안을 검토하자.
             try :
                 
-                m=Movie.objects.filter(uploadedFile__endswith=movie_name)[0]
+                #m=Movie.objects.filter(uploadedFile__endswith=movie_name)[0]
+                m=Movie.objects.filter(Name=movie_name).first()
                 print(m.is_eval)
                 
                 if hasattr(m,'face_reader'):
