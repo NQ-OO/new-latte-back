@@ -1,39 +1,57 @@
 from transformers import AutoTokenizer, AutoModelWithLMHead
 from deepface import DeepFace
 import urllib.request
-from azure.cognitiveservices.vision.face import FaceClient
-from azure.cognitiveservices.vision.face.models import FaceAttributeType
-from msrest.authentication import CognitiveServicesCredentials
-tokenizer = AutoTokenizer.from_pretrained("mrm8488/t5-base-finetuned-emotion")
-model = AutoModelWithLMHead.from_pretrained("mrm8488/t5-base-finetuned-emotion")
+import torch
+#from azure.cognitiveservices.vision.face import FaceClient
+#from azure.cognitiveservices.vision.face.models import FaceAttributeType
+#from msrest.authentication import CognitiveServicesCredentials
+#tokenizer = AutoTokenizer.from_pretrained("mrm8488/t5-base-finetuned-emotion")
+#model = AutoModelWithLMHead.from_pretrained("mrm8488/t5-base-finetuned-emotion")
 
 import cv2
 import os
 
-def get_emotion(text):
-  input_ids = tokenizer.encode(text + '</s>', return_tensors='pt')
+import requests
 
-  output = model.generate(input_ids=input_ids,
+API_URL = "https://api-inference.huggingface.co/models/mrm8488/t5-base-finetuned-emotion"
+headers = {"Authorization": "Bearer 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"}
+
+def query(payload):
+	response = requests.post(API_URL, headers=headers, json=payload)
+	return response.json()
+
+def get_emotion(text):
+  #input_ids = tokenizer.encode(text + '</s>', return_tensors='pt')
+
+  """output = model.generate(input_ids=input_ids,
                max_length=2)
-  
-  dec = [tokenizer.decode(ids) for ids in output]
-  label = dec[0]
-  return label
+  """
+  output = query({
+      "inputs": text,"options" : {"wait_for_model": True},
+    })[0]['generated_text']
+  output="<pad> "+output
+  #dec = [tokenizer.decode(ids) for ids in output]
+  #label = dec[0]
+  #return label
+  #print(output)
+  # model을 load할 수 없기 때문에 api로 호출, 다른 방식으로 result가 나오지만 최종적으로는 원래와 똑같은 형태로
+  # return합니다.
+  return output
 #print(get_emotion("i feel as if i havent blogged in ages are at least truly blogged i am doing an update cute"))
 
 
 
 # This key will serve all examples in this document.
-KEY = '79c02bc0ff554cc89c0b237064b6570b'
+#KEY = '79c02bc0ff554cc89c0b237064b6570b'
 
 # This endpoint will be used in all examples in this quickstart.
-ENDPOINT = 'https://2022internfaceapp.cognitiveservices.azure.com/'
+#ENDPOINT = 'https://2022internfaceapp.cognitiveservices.azure.com/'
 
 # Create an authenticated FaceClient.
-face_client = FaceClient(ENDPOINT, CognitiveServicesCredentials(KEY))
+#face_client = FaceClient(ENDPOINT, CognitiveServicesCredentials(KEY))
 #face_attributes = ['emotion']
-face_attributes = ['age', 'gender', 'headPose', 'smile', 'facialHair', 'glasses', 'emotion']
-def azure_face_api(image):
+#face_attributes = ['age', 'gender', 'headPose', 'smile', 'facialHair', 'glasses', 'emotion']
+"""def azure_face_api(image):
     im=open(image,'rb')
     #detected_faces = face_client.face.detect_with_stream(im, return_face_attributes=face_attributes)
     #detected_faces = face_client.face.detect_with_stream(im)
@@ -85,7 +103,7 @@ def azure_face_api(image):
                 dominant_emotion=e
 
         return dominant_emotion,False
-
+"""
 #print(azure_face_api("/home/ubuntu/yourchoice/media/Face/smile.jpg"))
 
 
@@ -198,8 +216,10 @@ def movie_extractor(file_path):
 #print(a)
 
 
-naver_url="https://clovaspeech-gw.ncloud.com/external/v1/3598/b5defce23910b08b500375ac0ddca79a4fe93a9c72b49b980e5a853dc3ec8667"
-naver_secret="ea397aca834f4de9beab17da75f46ddf"
+naver_url=
+naver_secret=
+
+
 def Speech2Text(name):
     shell="curl --location --request POST '" + naver_url + "/recognizer/upload' --header 'X-CLOVASPEECH-API-KEY: " + naver_secret + " ' --form 'media=@/home/ubuntu/yourchoice/media/Speech/" + str(name) + ".mp4' --form 'params={\"language\":\"ko-KR\",\"completion\":\"sync\"};type=application/json'"
 

@@ -137,7 +137,7 @@ class Face_readerViewSet(viewsets.ModelViewSet):
 
         if uploadedFile != None and serializer.is_valid() :
             name=request.data["Name"]
-            #movie_name=request.data["Movie"]
+            
             movie_name=name # Face 의 이름을 movie의 이름과 같게 전송해야 한다!
 
             print("uploaded name : " + str(name))
@@ -158,16 +158,7 @@ class Face_readerViewSet(viewsets.ModelViewSet):
                     #print(m.face_reader)
                 
 
-                #if m.is_eval==1:
-                    #print(hasattr(m,face_reader))
-                    #f=m.face_reader
-                    #print(f)
-                    #f.movie=null
-                    #f.delete()
-                #print(Movie.objects.get(Name__exact=movie_name))
-                #print(movie_name)
-                #print(Movie.objects.all())
-                #print(m)
+                
                 s=Face_reader.objects.create(movie=m,uploadedFile=uploadedFile,Name=name)
                 #s=Face_reader.objects.create(uploadedFile=uploadedFile,Name=name)
                 #s.movie=m
