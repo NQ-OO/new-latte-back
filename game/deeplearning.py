@@ -216,8 +216,8 @@ def movie_extractor(file_path):
 #print(a)
 
 
-naver_url=
-naver_secret=
+naver_url=""
+naver_secret=""
 
 
 def Speech2Text(name):
