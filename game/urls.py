@@ -11,6 +11,8 @@ router.register('voice',Speech_to_TextViewSet)
 router.register('face',Face_readerViewSet)
 router.register('movie',MovieViewSet)
 router.register('user',UserViewSet)
+router.register('blog',BlogViewSet)
+
 urlpatterns = [
     path('api/',include(router.urls)),
     path('', views.index, name='index'),

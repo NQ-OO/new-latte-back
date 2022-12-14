@@ -70,6 +70,10 @@ class SceneViewSet(viewsets.ModelViewSet):
     queryset = Scene.objects.all()
     serializer_class = SceneSerializer
 
+class BlogViewSet(viewsets.ModelViewSet):
+    queryset = Blog.objects.all()
+    serializer_class = BlogSerializer
+
 class Text_readerViewSet(viewsets.ModelViewSet):
     queryset=Text_reader.objects.all()
     serializer_class = Text_readerSerializer

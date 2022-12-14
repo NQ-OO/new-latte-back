@@ -19,6 +19,11 @@ class UserSerializer(serializers.ModelSerializer):
         model=User
         fields='__all__'
 
+class BlogSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=Blog
+        fields='__all__'
+
 class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model=Movie

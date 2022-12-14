@@ -16,7 +16,6 @@ class Movie(models.Model):
     def __str__(self):
         return str(self.Name)
 
-
 class Face_reader(models.Model):
     Name=models.CharField(max_length=255,null=True,blank=True,help_text="파일명")
     uploadedFile = models.FileField(upload_to = "Face")
@@ -43,6 +42,14 @@ class Text_reader(models.Model):
     def __str__(self):
         return str(self.Name)
 
+class Blog(models.Model):
+    Title=models.CharField(max_length=255,null=True,blank=True,help_text="제목")
+    Text=models.CharField(max_length=255,null=True,blank=True,help_text="텍스트")
+    pub_date=models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return str(self.Title)
+    
 
 class Scene(models.Model):
     id=models.IntegerField(default=0,primary_key=True,help_text="장면 고유 번호")
