@@ -50,7 +50,7 @@ class MovieViewSet(viewsets.ModelViewSet):
     def list(self,request):
         user = request.user
         # user_obj = User.objects.get(id=user)
-        user_obj = User.objects.get(id=1)
+        user_obj = User.objects.get(id=20)
         user_is_evaluater = user_obj.is_evaluater
         if user_is_evaluater == 0 : 
             queryset = Movie.objects.filter(author = user_obj).order_by('-is_eval')
