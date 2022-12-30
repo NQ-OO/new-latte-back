@@ -24,6 +24,11 @@ class BlogSerializer(serializers.ModelSerializer):
         model=Blog
         fields='__all__'
 
+class CommentAndStarSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=CommentAndStar
+        fields='__all__'
+
 class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model=Movie

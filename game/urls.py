@@ -12,6 +12,7 @@ router.register('face',Face_readerViewSet)
 router.register('movie',MovieViewSet)
 router.register('user',UserViewSet)
 router.register('blog',BlogViewSet)
+router.register('comment',CommentViewSet)
 
 urlpatterns = [
     path('api/',include(router.urls)),

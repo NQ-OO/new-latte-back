@@ -48,7 +48,16 @@ class MovieViewSet(viewsets.ModelViewSet):
         else:
             return HttpResponse(status=500)
     def list(self,request):
-        queryset = Movie.objects.all()
+        user = request.user
+        # user_obj = User.objects.get(id=user)
+        user_obj = User.objects.get(id=1)
+        user_is_evaluater = user_obj.is_evaluater
+        if user_is_evaluater == 0 : 
+            queryset = Movie.objects.filter(author = user_obj).order_by('-is_eval')
+        
+        else :
+            queryset = Movie.objects.all().order_by('is_eval')
+        
         serializer = MovieSerializer(queryset, many=True)
          
         return Response(serializer.data)
@@ -73,6 +82,10 @@ class SceneViewSet(viewsets.ModelViewSet):
 class BlogViewSet(viewsets.ModelViewSet):
     queryset = Blog.objects.all()
     serializer_class = BlogSerializer
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = CommentAndStar.objects.all()
+    serializer_class = CommentAndStarSerializer
 
 class Text_readerViewSet(viewsets.ModelViewSet):
     queryset=Text_reader.objects.all()
