@@ -10,7 +10,7 @@ class User(AbstractUser):
 
 class Movie(models.Model):
     Name=models.CharField(max_length=255,null=True,blank=True,help_text="파일명")
-    author = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, default=10)
     uploadedFile = models.FileField(upload_to = "Movie")
     pub_date=models.DateTimeField(default=timezone.now)
     is_eval=models.IntegerField(default=0) 
@@ -45,7 +45,7 @@ class Text_reader(models.Model):
 
 class Blog(models.Model):
     Title=models.CharField(max_length=255,null=True,blank=True,help_text="제목")
-    author = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, default=10)
     Text=models.CharField(max_length=255,null=True,blank=True,help_text="텍스트")
     pub_date=models.DateTimeField(default=timezone.now)
 
@@ -55,8 +55,8 @@ class Blog(models.Model):
 class CommentAndStar(models.Model):
     text = models.CharField(max_length=255,null=True,blank=True,help_text="텍스트")
     star_cnt = models.IntegerField(null=True, blank=True, default=3 )
-    author = models.ForeignKey(User, on_delete=models.CASCADE, default=1)
-    blog_idx = models.ForeignKey(Blog, on_delete=models.CASCADE, default=1)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, default=10)
+    blog_idx = models.ForeignKey(Blog, on_delete=models.CASCADE, null=True,blank=True)
     def __str__(self):
         return str(self.blog_idx)
 
