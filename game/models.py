@@ -57,6 +57,7 @@ class CommentAndStar(models.Model):
     star_cnt = models.IntegerField(null=True, blank=True, default=3 )
     author = models.ForeignKey(User, on_delete=models.CASCADE, default=10)
     blog_idx = models.ForeignKey(Blog, on_delete=models.CASCADE, null=True,blank=True)
+    movie=models.ForeignKey(Movie,on_delete=models.CASCADE, null=True, default=1)
     def __str__(self):
         return str(self.blog_idx)
 

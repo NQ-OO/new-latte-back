@@ -7,6 +7,8 @@ from rest_framework.parsers import JSONParser
 from django.http import HttpResponse, JsonResponse
 from rest_framework.response import Response
 import requests
+from rest_framework.views import APIView
+from rest_framework.decorators import action
 
 # Create your views here.
 
@@ -31,6 +33,22 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 class MovieViewSet(viewsets.ModelViewSet):
     queryset=Movie.objects.all()
     serializer_class=MovieSerializer
+
+    # url : movie/{fk}/list_movie_by_user
+    @action(detail=True, methods=['get'])
+    def list_movie_by_user(self, request, pk):
+        user_obj = User.objects.get(id=pk)
+        print('user_obj :', user_obj)
+        user_is_evaluater = user_obj.is_evaluater
+        if user_is_evaluater == 0 : 
+            queryset = Movie.objects.filter(author = user_obj).order_by('-is_eval')
+        
+        else :
+            queryset = Movie.objects.all().order_by('is_eval')
+        
+        serializer = MovieSerializer(queryset, many=True)
+         
+        return Response(serializer.data)
 
     def create(self, request):
         serializer = MovieSerializer(data = request.data, many=True)
@@ -86,6 +104,18 @@ class BlogViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = CommentAndStar.objects.all()
     serializer_class = CommentAndStarSerializer
+
+    # url : comment/{fk}/list_comment_by_movieid
+    @action(detail=True, methods=['get'])
+    def list_comment_by_movieid(self, request, pk):
+        movie_obj = Movie.objects.get(id=pk)
+        print('movie_obj :', movie_obj)
+        queryset = CommentAndStar.objects.filter( movie = movie_obj)
+        
+        serializer = CommentAndStarSerializer(queryset, many=True)
+         
+        return Response(serializer.data)
+
 
 class Text_readerViewSet(viewsets.ModelViewSet):
     queryset=Text_reader.objects.all()
