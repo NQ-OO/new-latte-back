@@ -123,11 +123,11 @@ import os
 import sys
 import json
 
-# client_id = "3IcEzV3WWP77e0DICyin" # 개발자센터에서 발급받은 Client ID 값
-# client_secret = "9MXpqzqgti" # 개발자센터에서 발급받은 Client Secret 값
+client_id = "3IcEzV3WWP77e0DICyin" # 개발자센터에서 발급받은 Client ID 값
+client_secret = "9MXpqzqgti" # 개발자센터에서 발급받은 Client Secret 값
 
-client_id = "isvat6nlu6" 
-client_secret = "lW8JWPqov2U1gDkqCw8O0lilynaxZQXv8dYDofVw"  
+# client_id = "isvat6nlu6" 
+# client_secret = "lW8JWPqov2U1gDkqCw8O0lilynaxZQXv8dYDofVw"  
 
 def translate(sentences):
      
@@ -218,8 +218,8 @@ def movie_extractor(file_path):
 #print(a)
 
 
-naver_url=""
-naver_secret=""
+naver_url="https://clovaspeech-gw.ncloud.com/external/v1/4480/eedd970a9f4d3b276407106b12afe35ed201b8ae8d6be3761fda65dd967d12ab"
+naver_secret="76b16130f99a47da987e06e022a13a1f"
 
 
 def Speech2Text(name):
