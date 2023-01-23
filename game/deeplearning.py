@@ -123,9 +123,11 @@ import os
 import sys
 import json
 
-client_id = "3IcEzV3WWP77e0DICyin" # 개발자센터에서 발급받은 Client ID 값
-client_secret = "9MXpqzqgti" # 개발자센터에서 발급받은 Client Secret 값
+# client_id = "3IcEzV3WWP77e0DICyin" # 개발자센터에서 발급받은 Client ID 값
+# client_secret = "9MXpqzqgti" # 개발자센터에서 발급받은 Client Secret 값
 
+client_id = "isvat6nlu6" 
+client_secret = "lW8JWPqov2U1gDkqCw8O0lilynaxZQXv8dYDofVw"  
 
 def translate(sentences):
      
